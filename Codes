@@ -28,10 +28,492 @@ for line in lines:
         else:
             print (i, " is an identifier")
 	   
-	   
+//	   
 	   
 Ex.2:
+rows, cols = (20, 3) 
+q = [[0]*cols]*rows 
 
+reg = input('Enter your regular expression : ')
+len = len(reg)
+i = 0
+j = 1
+print( q)
+while(i<len):
+    if reg[i] == 'a':
+        try:
+            if reg[i+1] != '|' and reg[i+1] !='*':
+                q[j][0] = j+1
+                j += 1
+        except:
+            q[j][0] = j+1
+
+    elif reg[i] == 'b':
+        try:
+            if reg[i+1] != '|' and reg[i+1] !='*':
+                q[j][1] = j+1
+                j += 1
+        except:
+            q[j][1] = j+1
+        
+    elif reg[i]=='e' and reg[i+1]!='|'and reg[i+1]!='*':
+        q[j][2]=j+1
+        j+=1
+
+    elif reg[i] == 'a' and reg[i+1] == '|' and reg[i+2] =='b':
+        q[j][2]=((j+1)*10)+(j+3)
+        j+=1
+        q[j][0]=j+1
+        j+=1
+        q[j][2]=j+3
+        j+=1
+        q[j][1]=j+1
+        j+=1
+        q[j][2]=j+1
+        j+=1
+        i=i+2
+
+    elif reg[i]=='b'and reg[i+1]=='|' and reg[i+2]=='a':
+
+        q[j][2]=((j+1)*10)+(j+3)
+        j+=1
+        q[j][1]=j+1
+        j+=1
+        q[j][2]=j+3
+        j+=1
+        q[j][0]=j+1
+        j+=1
+        q[j][2]=j+1
+        j+=1
+        i=i+2
+
+    elif reg[i]=='a' and reg[i+1]=='*':
+
+        q[j][2]=((j+1)*10)+(j+3)
+        j+=1
+        q[j][0]=j+1
+        j+=1
+        q[j][2]=((j+1)*10)+(j-1)
+        j+=1
+
+    elif reg[i]=='b' and reg[i+1]=='*':
+        q[j][2]=((j+1)*10)+(j+3)
+        j+=1
+        q[j][1]=j+1
+        j+=1
+        q[j][2]=((j+1)*10)+(j-1)
+        j+=1
+
+    elif reg[i]==')' and reg[i+1]=='*':
+
+        q[0][2]=((j+1)*10)+1
+        q[j][2]=((j+1)*10)+1
+        j+=1
+
+    i +=1
+
+print("Transition Function ==>")
+
+for i in range(0,j):
+    if q[i][0]!=0:
+
+	    print(f"\n {q[i]},a --> {q[i][0]}")
+
+    elif q[i][1]!=0:
+	    print (f"\n {q[i]},b-->{q[i][1]}")
+
+    elif q[i][2]!=0:
+		
+	    if q[i][2]<10:
+		    print(f"\n {q[i]},e-->{q[i][2]}")
+	    else:
+		    print(f"\n {q[i]},e-->{q[i][2]}/10 and {q[i][2]}%10")
+		    
+//		    
+		    
+Ex.3:
+import pandas as pd
+
+nfa = {}
+n = int(input("No. of states : "))
+t = int(input("No. of transitions : "))
+for i in range(n):
+    state = input("state name : ")
+    nfa[state] = {}
+    for j in range(t):
+        path = input("path : ")
+        print("Enter end state from state {} travelling through path {} : ".format(state, path))
+        reaching_state = [x for x in input().split()]
+        nfa[state][path] = reaching_state
+
+print("\nNFA :- \n")
+print(nfa)
+print("\nPrinting NFA table :- ")
+nfa_table = pd.DataFrame(nfa)
+print(nfa_table.transpose())
+
+print("Enter final state of NFA : ")
+nfa_final_state = [x for x in input().split()]
+
+new_states_list = []
+
+#-------------------------------------------------
+
+dfa = {}
+keys_list = list(
+    list(nfa.keys())[0])
+path_list = list(nfa[keys_list[0]].keys())
+
+dfa[keys_list[0]] = {}
+for y in range(t):
+    var = "".join(nfa[keys_list[0]][
+                      path_list[y]])
+    dfa[keys_list[0]][path_list[y]] = var
+    if var not in keys_list:
+        new_states_list.append(var)
+        keys_list.append(var)
+
+while len(new_states_list) != 0:
+    dfa[new_states_list[0]] = {}
+    for _ in range(len(new_states_list[0])):
+        for i in range(len(path_list)):
+            temp = []
+            for j in range(len(new_states_list[0])):
+                temp += nfa[new_states_list[0][j]][path_list[i]]
+            s = ""
+            s = s.join(temp)
+            if s not in keys_list:
+                new_states_list.append(s)
+                keys_list.append(s)
+            dfa[new_states_list[0]][path_list[i]] = s
+
+    new_states_list.remove(new_states_list[0])
+
+print("\nDFA :- \n")
+print(dfa)
+print("\nPrinting DFA table :- ")
+dfa_table = pd.DataFrame(dfa)
+print(dfa_table.transpose())
+
+dfa_states_list = list(dfa.keys())
+dfa_final_states = []
+for x in dfa_states_list:
+    for i in x:
+        if i in nfa_final_state:
+            dfa_final_states.append(x)
+            break
+
+print("\nFinal states of the DFA are : ", dfa_final_states)
+
+//
+
+Ex.4:
+left fact: #include <iostream>
+#include <math.h>
+#include <vector>
+#include <string>
+#include <stdlib.h>
+using namespace std;
+
+int main()
+{
+    cout<<"\nEnter number of productions: ";
+    int p;
+    cin>>p;
+    vector<string> prodleft(p),prodright(p);
+    cout<<"\nEnter productions one by one: ";
+    int i;
+    for(i=0;i<p;++i) {
+        cout<<"\nLeft of production "<<i+1<<": ";
+        cin>>prodleft[i];
+        cout<<"\nRight of production "<<i+1<<": ";
+        cin>>prodright[i];
+    }
+    int j;  
+    int e=1;
+    for(i=0;i<p;++i) {
+        for(j=i+1;j<p;++j) {
+            if(prodleft[j]==prodleft[i]) {
+                int k=0;
+                string com="";
+                while(k<prodright[i].length()&&k<prodright[j].length()&&prodright[i][k]==prodright[j][k]) {
+                    com+=prodright[i][k];
+                    ++k;
+                }
+                if(k==0)
+                    continue;
+                char* buffer;
+                string comleft=prodleft[i];
+                if(k==prodright[i].length()) {
+                    prodleft[i]+=string(itoa(e,buffer,10));
+                    prodleft[j]+=string(itoa(e,buffer,10));
+                    prodright[i]="^";
+                    prodright[j]=prodright[j].substr(k,prodright[j].length()-k);
+                }
+                else if(k==prodright[j].length()) {
+                    prodleft[i]+=string(itoa(e,buffer,10));
+                    prodleft[j]+=string(itoa(e,buffer,10));
+                    prodright[j]="^";
+                    prodright[i]=prodright[i].substr(k,prodright[i].length()-k);
+                }
+                else {
+                    prodleft[i]+=string(itoa(e,buffer,10));
+                    prodleft[j]+=string(itoa(e,buffer,10));
+                    prodright[j]=prodright[j].substr(k,prodright[j].length()-k);
+                    prodright[i]=prodright[i].substr(k,prodright[i].length()-k);
+                }
+                int l;
+                for(l=j+1;l<p;++l) {
+                    if(comleft==prodleft[l]&&com==prodright[l].substr(0,fmin(k,prodright[l].length()))) {
+                        prodleft[l]+=string(itoa(e,buffer,10));
+                        prodright[l]=prodright[l].substr(k,prodright[l].length()-k);
+                    }
+                }
+                prodleft.push_back(comleft);
+                prodright.push_back(com+prodleft[i]);
+                ++p;
+                ++e;
+            }
+        }
+    }
+    cout<<"\n\nNew productions";
+    for(i=0;i<p;++i) {
+        cout<<"\n"<<prodleft[i]<<"->"<<prodright[i];
+    }
+    return 0;
+}
+
+//
+
+Left recursion:
+#include<iostream>
+#include<string>
+using namespace std;
+int main()
+{  string ip,op1,op2,temp;
+    int sizes[10] = {};
+    char c;
+    int n,j,l;
+    cout<<"Enter the Parent Non-Terminal : ";
+    cin>>c;
+    ip.push_back(c);
+    op1 += ip + "\'->";
+    ip += "->";
+    op2+=ip;
+    cout<<"Enter the number of productions : ";
+    cin>>n;
+    for(int i=0;i<n;i++)
+    {   cout<<"Enter Production "<<i+1<<" : ";
+        cin>>temp;
+        sizes[i] = temp.size();
+        ip+=temp;
+        if(i!=n-1)
+            ip += "|";
+    }
+    cout<<"Production Rule : "<<ip<<endl;
+    for(int i=0,k=3;i<n;i++)
+    {
+        if(ip[0] == ip[k])
+        {
+            cout<<"Production "<<i+1<<" has left recursion."<<endl;
+            if(ip[k] != '#')
+            {
+                for(l=k+1;l<k+sizes[i];l++)
+                    op1.push_back(ip[l]);
+                k=l+1;
+                op1.push_back(ip[0]);
+                op1 += "\'|";
+            }
+        }
+        else
+        {
+            cout<<"Production "<<i+1<<" does not have left recursion."<<endl;
+            if(ip[k] != '#')
+            {
+                for(j=k;j<k+sizes[i];j++)
+                    op2.push_back(ip[j]);
+                k=j+1;
+                op2.push_back(ip[0]);
+                op2 += "\'|";
+            }
+            else
+            {
+                op2.push_back(ip[0]);
+                op2 += "\'";
+            }}}
+    op1 += "#";
+    cout<<op2<<endl;
+    cout<<op1<<endl;
+    return 0;}
+    
+//
+
+
+Ex.5:
+import sys
+sys.setrecursionlimit(60)
+
+def first(string):
+    #print("first({})".format(string))
+    first_ = set()
+    if string in non_terminals:
+        alternatives = productions_dict[string]
+
+        for alternative in alternatives:
+            first_2 = first(alternative)
+            first_ = first_ |first_2
+
+    elif string in terminals:
+        first_ = {string}
+
+    elif string=='' or string=='@':
+        first_ = {'@'}
+
+    else:
+        first_2 = first(string[0])
+        if '@' in first_2:
+            i = 1
+            while '@' in first_2:
+                #print("inside while")
+
+                first_ = first_ | (first_2 - {'@'})
+                #print('string[i:]=', string[i:])
+                if string[i:] in terminals:
+                    first_ = first_ | {string[i:]}
+                    break
+                elif string[i:] == '':
+                    first_ = first_ | {'@'}
+                    break
+                first_2 = first(string[i:])
+                first_ = first_ | first_2 - {'@'}
+                i += 1
+        else:
+            first_ = first_ | first_2
+
+
+    #print("returning for first({})".format(string),first_)
+    return  first_
+
+
+def follow(nT):
+    #print("inside follow({})".format(nT))
+    follow_ = set()
+    #print("FOLLOW", FOLLOW)
+    prods = productions_dict.items()
+    if nT==starting_symbol:
+        follow_ = follow_ | {'$'}
+    for nt,rhs in prods:
+        #print("nt to rhs", nt,rhs)
+        for alt in rhs:
+            for char in alt:
+                if char==nT:
+                    following_str = alt[alt.index(char) + 1:]
+                    if following_str=='':
+                        if nt==nT:
+                            continue
+                        else:
+                            follow_ = follow_ | follow(nt)
+                    else:
+                        follow_2 = first(following_str)
+                        if '@' in follow_2:
+                            follow_ = follow_ | follow_2-{'@'}
+                            follow_ = follow_ | follow(nt)
+                        else:
+                            follow_ = follow_ | follow_2
+    #print("returning for follow({})".format(nT),follow_)
+    return follow_
+
+
+
+
+
+no_of_terminals=int(input("Enter no. of terminals: "))
+
+terminals = []
+
+print("Enter the terminals :")
+for _ in range(no_of_terminals):
+    terminals.append(input())
+
+no_of_non_terminals=int(input("Enter no. of non terminals: "))
+
+non_terminals = []
+
+print("Enter the non terminals :")
+for _ in range(no_of_non_terminals):
+    non_terminals.append(input())
+
+starting_symbol = input("Enter the starting symbol: ")
+
+no_of_productions = int(input("Enter no of productions: "))
+
+productions = []
+
+print("Enter the productions:")
+for _ in range(no_of_productions):
+    productions.append(input())
+
+
+#print("terminals", terminals)
+
+#print("non terminals", non_terminals)
+
+#print("productions",productions)
+
+
+productions_dict = {}
+
+for nT in non_terminals:
+    productions_dict[nT] = []
+
+
+#print("productions_dict",productions_dict)
+
+for production in productions:
+    nonterm_to_prod = production.split("->")
+    alternatives = nonterm_to_prod[1].split("/")
+    for alternative in alternatives:
+        productions_dict[nonterm_to_prod[0]].append(alternative)
+
+#print("productions_dict",productions_dict)
+
+#print("nonterm_to_prod",nonterm_to_prod)
+#print("alternatives",alternatives)
+
+
+FIRST = {}
+FOLLOW = {}
+
+for non_terminal in non_terminals:
+    FIRST[non_terminal] = set()
+
+for non_terminal in non_terminals:
+    FOLLOW[non_terminal] = set()
+
+#print("FIRST",FIRST)
+
+for non_terminal in non_terminals:
+    FIRST[non_terminal] = FIRST[non_terminal] | first(non_terminal)
+
+#print("FIRST",FIRST)
+
+
+FOLLOW[starting_symbol] = FOLLOW[starting_symbol] | {'$'}
+for non_terminal in non_terminals:
+    FOLLOW[non_terminal] = FOLLOW[non_terminal] | follow(non_terminal)
+
+#print("FOLLOW", FOLLOW)
+
+print("{: ^20}{: ^20}{: ^20}".format('Non Terminals','First','Follow'))
+for non_terminal in non_terminals:
+    print("{: ^20}{: ^20}{: ^20}".format(non_terminal,str(FIRST[non_terminal]),str(FOLLOW[non_terminal])))
+    
+//
+
+
+Ex.6:
+Ex.7:
+Ex.8:
 Ex.9:
 #include<iostream>
 #include<conio.h>
